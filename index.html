@@ -1,108 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>LOVE — Time · Matter · Space</title>
-<link rel="stylesheet" href="style.css">
+<meta name="description" content="An offline hierarchical life-recording, variable-tracking, location-history and analysis system.">
+<meta name="theme-color" content="#F7F8FA">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header class="top">
-  <div class="brand"><span class="heart">♥</span><div><b>LOVE</b><small>TIME · MATTER · SPACE</small></div></div>
-  <div class="status"><i></i> OFFLINE</div>
-</header>
 
-<section class="hero">
-  <div class="heroTime" id="liveClock">00:00:00.000</div>
-  <div id="liveDate"></div>
-  <div class="context" id="liveContext">TIME → MATTER → SPACE</div>
-</section>
+<div id="app">
 
-<main>
-  <section class="toolbar">
-    <button class="nav active" data-view="time">TIME</button>
-    <button class="nav" data-view="fetch">FETCH</button>
-    <button class="nav" data-view="analyse">ANALYSE</button>
-    <button class="nav" data-view="export">EXPORT</button>
-  </section>
+  <header class="bar">
+    <div class="brand">
+      <span class="brand-mark">L</span>
+      <span class="brand-name">LOVE</span>
+    </div>
+    <div class="bar-clock readout" id="barClock">--:--:--.---</div>
+    <span class="offline-dot" id="offlineDot">● LOCAL DATA ACTIVE</span>
+  </header>
 
-  <section id="timeView" class="view active">
-    <div class="sectionHead">
-      <div><span>TIME DATABASE</span><h1>Every unit is a record button</h1></div>
-      <button class="ghost" id="todayBtn">TODAY</button>
+  <div class="perm-banner" id="permBanner" style="display:none">
+    <span>LOVE can record where you were automatically — no form to fill.</span>
+    <div class="perm-actions">
+      <button class="btn btn-sm btn-space" id="grantLocBtn">Enable location</button>
+      <button class="btn btn-sm" id="dismissPermBtn">Not now</button>
     </div>
-    <div id="timeUnits"></div>
-  </section>
-
-  <section id="fetchView" class="view">
-    <div class="sectionHead"><div><span>FETCH</span><h1>Bring your life records together</h1></div></div>
-    <div class="controlGrid">
-      <input id="search" placeholder="Search event, place, category...">
-      <select id="fetchCategory"><option value="">All categories</option><option>Love</option><option>Hope</option><option>Faith</option></select>
-      <select id="fetchType"><option value="">All records</option><option>Plan</option><option>Record</option><option>Evaluate</option></select>
-    </div>
-    <div id="fetchResults"></div>
-  </section>
-
-  <section id="analyseView" class="view">
-    <div class="sectionHead"><div><span>ANALYSE</span><h1>How time became life</h1></div></div>
-    <div id="stats" class="stats"></div>
-    <div id="analysisCards" class="analysisCards"></div>
-  </section>
-
-  <section id="exportView" class="view">
-    <div class="sectionHead"><div><span>EXPORT</span><h1>Take your life data with you</h1></div></div>
-    <div class="exportCard">
-      <p>All data remains in this browser. Export a complete JSON backup or a readable CSV.</p>
-      <div class="exportButtons"><button class="primary" id="jsonExport">EXPORT JSON</button><button class="secondary" id="csvExport">EXPORT CSV</button><button class="danger" id="clearData">DELETE LOCAL DATA</button></div>
-    </div>
-  </section>
-</main>
-
-<div class="modal" id="modal">
-  <div class="modalBox">
-    <div class="modalTop"><div><span id="modalKicker">TIME UNIT</span><h2 id="modalTitle"></h2><p id="modalSubtitle"></p></div><button class="close" id="closeModal">×</button></div>
-    <div class="unitSummary" id="unitSummary"></div>
-    <div class="recordTabs">
-      <button class="recordTab active" data-record="Plan">PLAN</button>
-      <button class="recordTab" data-record="Record">RECORD</button>
-      <button class="recordTab" data-record="Evaluate">EVALUATE</button>
-    </div>
-    <div class="formGrid">
-      <label>Activity / event
-        <input id="eventText" list="eventList" placeholder="e.g. Studying">
-        <datalist id="eventList"></datalist>
-      </label>
-      <label>Category
-        <select id="category"><option>Love</option><option>Hope</option><option>Faith</option></select>
-      </label>
-      <label>Space / place
-        <input id="place" list="placeList" placeholder="e.g. Dar">
-        <datalist id="placeList"></datalist>
-      </label>
-      <label>Coordinates
-        <div class="coordLine"><input id="coords" placeholder="latitude, longitude"><button id="gps">GPS</button></div>
-      </label>
-      <label class="wide">Description
-        <textarea id="description" rows="4" placeholder="Write the major information for this unit..."></textarea>
-      </label>
-    </div>
-    <div class="lifeRail">
-      <button data-life="Faith">FAITH · SPIRIT</button>
-      <button data-life="Hope">HOPE · SOUL</button>
-      <button data-life="Love">LOVE · BODY</button>
-    </div>
-    <div class="mediaRail">
-      <button id="camera">📷 CAMERA</button>
-      <button id="video">🎥 VIDEO</button>
-      <input hidden id="cameraInput" type="file" accept="image/*" capture="environment">
-      <input hidden id="videoInput" type="file" accept="video/*" capture="environment">
-      <div id="mediaPreview"></div>
-    </div>
-    <div class="modalActions"><button class="secondary" id="cancel">CANCEL</button><button class="primary" id="saveRecord">SAVE TO TIME DATABASE</button></div>
-    <div class="recordsForUnit" id="recordsForUnit"></div>
   </div>
+
+  <div id="verseBanner"></div>
+
+  <main id="mainView"></main>
+
+  <nav class="tabbar" role="tablist" aria-label="Primary sections">
+    <button class="tab active" data-tab="time" role="tab" aria-selected="true"><span class="tab-glyph">◔</span><span>Time</span></button>
+    <button class="tab" data-tab="matter" role="tab" aria-selected="false"><span class="tab-glyph">◆</span><span>Matter</span></button>
+    <button class="tab" data-tab="space" role="tab" aria-selected="false"><span class="tab-glyph">⬡</span><span>Space</span></button>
+    <button class="tab" data-tab="fetch" role="tab" aria-selected="false"><span class="tab-glyph">🔍</span><span>Fetch</span></button>
+    <button class="tab" data-tab="analyse" role="tab" aria-selected="false"><span class="tab-glyph">📊</span><span>Analyse</span></button>
+    <button class="tab" data-tab="export" role="tab" aria-selected="false"><span class="tab-glyph">⬇</span><span>Export</span></button>
+    <button class="tab" data-tab="settings" role="tab" aria-selected="false"><span class="tab-glyph">⚙</span><span>Settings</span></button>
+  </nav>
 </div>
-<script src="app.js"></script>
+
+<div id="modalRoot"></div>
+
+<script src="js/db.js"></script>
+<script src="js/time.js"></script>
+<script src="js/verses.js"></script>
+<script src="js/location.js"></script>
+<script src="js/vocabulary.js"></script>
+<script src="js/record.js"></script>
+<script src="js/views/time-view.js"></script>
+<script src="js/views/matter-view.js"></script>
+<script src="js/views/space-view.js"></script>
+<script src="js/views/fetch-view.js"></script>
+<script src="js/views/analyse-view.js"></script>
+<script src="js/views/export-view.js"></script>
+<script src="js/views/settings-view.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
